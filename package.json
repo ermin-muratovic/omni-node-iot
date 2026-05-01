@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "node-red": "^4.1.8",
-    "node-red-contrib-aedes": "~0.11.0",
+    "node-red-contrib-aedes": "~1.2.0",
     "node-red-dashboard": "~3.6.5"
   }
 }
