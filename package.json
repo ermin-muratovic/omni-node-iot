@@ -1,0 +1,13 @@
+{
+  "name": "omninode-master",
+  "version": "1.0.0",
+  "description": "Master Dashboard for ESP32 Sensor Network",
+  "scripts": {
+    "start": "node-red --userDir ./node-red-data"
+  },
+  "dependencies": {
+    "node-red": "^4.1.8",
+    "node-red-contrib-aedes": "~0.11.0",
+    "node-red-dashboard": "~3.6.5"
+  }
+}
