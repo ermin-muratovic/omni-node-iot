@@ -1,35 +1,71 @@
 # OmniNode 📡
 
-A self-organizing ESP32 sensor network using mDNS auto-discovery and MQTT telemetry to a Mac-hosted Node-RED dashboard.
+A decentralized ESP32 sensor network with mDNS auto-discovery and a Mac-hosted Node-RED dashboard.
 
-## 🏗 Current Architecture
-- **Master (MacBook Air 2015):** 
-  - **MQTT Broker:** Mosquitto (running on port 1883).
-  - **Discovery:** Broadcasts `_mqtt._tcp` via `dns-sd`.
-  - **Dashboard:** Node-RED (v4.1.8) on Node v24.15.
-- **Nodes (ESP32):**
-  - **Discovery:** Finds Master via mDNS query.
-  - **Telemetry:** Internal Temp, RSSI, and Uptime via JSON over MQTT.
-
-## 🛠 Tech Stack
-- **Hardware:** ESP32 DevKit.
-- **Framework:** Arduino / PlatformIO.
-- **Communication:** MQTT + mDNS.
-
-## 🚀 Recent Milestones
-- [x] Mac Master setup (Mosquitto + Node-RED).
-- [x] Successful End-to-End Handshake (ESP32 -> Mac).
-- [x] Real-time Dashboard with SENDER #1 Gauges.
-
-## 🔋 Roadmap
-- [ ] Implement Battery Monitoring (ADC Voltage Divider).
-- [ ] Add BLE/Bluetooth smart BMS integration.
-- [ ] Auto-generate dashboard cards for new nodes dynamically.
-```
+## 🏗 Architecture
+- **The Master (MacBook Air 2015):** 
+    - **Broker:** Mosquitto MQTT (Port 1883).
+    - **Discovery:** Broadcasts service via `dns-sd`.
+    - **Dashboard:** Node-RED (v4.1.8) hosting the UI at `localhost:1880/ui`.
+- **The Nodes (ESP32):**
+    - **Discovery:** Automatically finds the Master on the local network via mDNS.
+    - **Telemetry:** Reports internal temperature, RSSI (signal strength), and uptime.
 
 ---
 
-### Pro-Tip: The "Persist" Button
-In Node-RED, now that you've imported the flow, click on the **Dashboard** tab in the right-hand sidebar (the little chart icon). Here, you can change the theme (Dark/Light) or change the title of the page to "OmniNode Vitals" to make it look even more professional.
+## 🚀 Setup & Startup Instructions
 
-**You are now ready for the next phase. Are you going to start wiring the battery voltage divider, or do you want to add a second ESP32 node first?**
+### 1. Master Setup (Mac)
+Ensure you have **Node.js** and **Mosquitto** installed.
+
+**A. Start the MQTT Broker:**
+Open a terminal and run Mosquitto with the local config to allow network access:
+```bash
+/usr/local/sbin/mosquitto -c mosquitto.conf
+```
+
+**B. Start mDNS Broadcasting:**
+In a new terminal tab, start the "beacon" so ESP32s can find your Mac:
+```bash
+dns-sd -R "OmniNode Master" _mqtt._tcp . 1883
+```
+
+**C. Launch the Dashboard:**
+In the project root, install dependencies and start Node-RED:
+```bash
+npm install
+npm start
+```
+*Access the editor at `http://localhost:1880` and the dashboard at `http://localhost:1880/ui`.*
+
+---
+
+### 2. Node Setup (ESP32)
+**A. Generate Configuration:**
+Run the Python script to detect your current WiFi SSID:
+```bash
+python3 generate_config.py
+```
+*Manually edit `include/config.h` to add your WiFi password.*
+
+**B. Build and Upload:**
+1. Open the project in **VS Code** with **PlatformIO**.
+2. Connect your ESP32 via USB.
+3. Click the **Arrow (→)** icon in the bottom toolbar to upload.
+
+---
+
+## 📂 Repository Structure
+- `src/main.cpp`: ESP32 firmware with mDNS/MQTT logic.
+- `include/config.h`: (Local only) WiFi and Server credentials.
+- `master-config/flows.json`: The Node-RED dashboard configuration.
+- `mosquitto.conf`: Configuration to allow remote ESP32 connections.
+- `generate_config.py`: Automation script for WiFi setup.
+
+---
+
+## 🔋 Roadmap
+- [x] Mac Master setup & ESP32 Handshake.
+- [x] Real-time Dashboard (Internal Temp & RSSI).
+- [ ] **Next:** Battery Voltage Monitoring via ADC.
+- [ ] **Later:** BLE integration for Smart BMS modules.
